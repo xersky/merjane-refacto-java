@@ -38,4 +38,17 @@ public class Product {
 
     @Column(name = "season_end_date")
     private LocalDate seasonEndDate;
+
+    public boolean isSeasonalProductOutOfSeason() {
+        return LocalDate.now().plusDays(this.leadTime).isAfter(this.seasonEndDate);
+    }
+
+    public boolean isSeasonalProductNotInSeason() {
+        return this.seasonStartDate.isAfter(LocalDate.now());
+    }
+
+    public boolean isExpirableProductExpired() {
+        return this.expiryDate != null && LocalDate.now().isAfter(this.expiryDate);
+    }
+
 }
