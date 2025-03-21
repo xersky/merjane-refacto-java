@@ -32,7 +32,7 @@ public class MyUnitTests {
         Mockito.when(productRepository.save(product)).thenReturn(product);
 
         // WHEN
-        productService.notifyDelay(product.getLeadTime(), product);
+        productService.notifyDelay(product);
 
         // THEN
         assertEquals(0, product.getAvailable());

@@ -6,6 +6,7 @@ import com.nimbleways.springboilerplate.repositories.OrderRepository;
 import com.nimbleways.springboilerplate.repositories.ProductRepository;
 import com.nimbleways.springboilerplate.services.implementations.NotificationService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,8 @@ import static org.junit.Assert.assertEquals;
 
 // import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,6 +58,27 @@ public class MyControllerIntegrationTests {
                                 .andExpect(status().isOk());
                 Order resultOrder = orderRepository.findById(order.getId()).get();
                 assertEquals(resultOrder.getId(), order.getId());
+
+
+                Product product1 = productRepository.findFirstByName("USB Cable").orElse(null);
+                Product product2 = productRepository.findFirstByName("USB Dongle").orElse(null);
+                Product product3 = productRepository.findFirstByName("Butter").orElse(null);
+                Product product4 = productRepository.findFirstByName("Milk").orElse(null);
+                Product product5 = productRepository.findFirstByName("Grapes").orElse(null);
+
+                assertNotNull(product1);
+                assertNotNull(product2);
+                assertNotNull(product3);
+                assertNotNull(product4);
+                assertNotNull(product5);
+
+                assertEquals(Integer.valueOf(29), product1.getAvailable());
+                assertEquals(Integer.valueOf(29), product3.getAvailable());
+
+                Mockito.verify(notificationService, times(1)).sendDelayNotification(product2.getLeadTime(), product2.getName());
+                Mockito.verify(notificationService, times(1)).sendExpirationNotification(product4.getName(), product4.getExpiryDate());
+                Mockito.verify(notificationService, times(1)).sendOutOfStockNotification(product5.getName());
+
         }
 
         private static Order createOrder(Set<Product> products) {
